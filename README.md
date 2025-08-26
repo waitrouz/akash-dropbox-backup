@@ -30,7 +30,7 @@ docker push your-dockerhub-username/akash-dropbox-backup:0.1
 ## How It Works
 
 ### 1. PostgreSQL Service
-- Runs a PostgreSQL database with persistent storage
+- Runs a PostgreSQL database
 
 ### 2. Backup Service
 - Uses shared memory (`/dev/shm`) for temporary storage of backup files
