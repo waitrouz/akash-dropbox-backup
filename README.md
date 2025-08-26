@@ -14,10 +14,11 @@ docker push your-dockerhub-username/akash-dropbox-backup:0.1
 ### 2. Create a Dropbox App and Get an Access Token
 - Go to https://www.dropbox.com/developers/apps
 - Create a new app with App folder access
+- Enable `files.content.write` under Permissions and save changes
 - Generate an access token
 
 ### 3. Update the deploy.yaml File
-- Replace `your-dockerhub-username/akash-dropbox-backup:latest` with your actual Docker image
+- Replace `your-dockerhub-username/akash-dropbox-backup:0.1` with your actual Docker image
 - Replace `your_dropbox_token_here` with your Dropbox access token
 
 ## Deploy to Akash via Akash Console
@@ -37,18 +38,10 @@ docker push your-dockerhub-username/akash-dropbox-backup:0.1
 - Uploads backups to Dropbox using the Dropbox API
 - Runs on a schedule (currently set to 24-hour intervals)
 
-## Key Features
-
-- **Shared Memory Utilization**: Uses Akash's shm feature for efficient file transfer between services
-- **Secure Backups**: Compressed and encrypted transfers to Dropbox
-- **Persistent Storage**: PostgreSQL data is stored on persistent volume
-- **Automated Process**: Regular backups without manual intervention
-
-## Notes
-
-- Remember to secure your Dropbox access token and database credentials
-- Adjust backup frequency based on your needs
-- Consider adding backup rotation policies on Dropbox
-- Test the backup restoration process regularly
+## Note for Zealy
+- Deployment succesfully tested on provider `provider.europlots.com`
+- Access Token from Dropbox must be generated only after receiving write permissions
+- Persistent Storage and Shared Memory (SHM) in one deployment leads to an endless search for providers
+- Pre-built image for deployment is `nomorelies/akash-dropbox-backup:0.1`
 
 This solution provides a reliable way to backup PostgreSQL databases from Akash deployments to Dropbox, leveraging Akash's shared memory feature for efficient operation.
