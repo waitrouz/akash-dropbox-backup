@@ -13,11 +13,6 @@ services:
       - POSTGRES_USER=akashuser
       - POSTGRES_PASSWORD=akashpass
       - POSTGRES_DB=akashdb
-    params:
-      storage:
-        data:
-          mount: /var/lib/postgresql/data
-          readOnly: false
   backup-app:
     image: your-dockerhub-username/akash-dropbox-backup:0.1
     expose:
@@ -29,6 +24,7 @@ services:
       - POSTGRES_HOST=postgres
       - POSTGRES_USER=akashuser
       - POSTGRES_PASSWORD=akashpass
+      - PGPASSWORD=akashpass # same password, env for pg_dump
       - POSTGRES_DB=akashdb
       - DROPBOX_ACCESS_TOKEN=your_dropbox_token_here
       - BACKUP_INTERVAL_SECONDS=86400 # Default: 24 hours (in seconds)
@@ -37,6 +33,8 @@ services:
         shm:
           mount: /dev/shm
           readOnly: false
+    depends_on:
+      - postgres
 profiles:
   compute:
     postgres:
@@ -47,11 +45,6 @@ profiles:
           size: 1Gi
         storage:
           - size: 512Mi
-          - name: data
-            size: 10Gi
-            attributes:
-              persistent: true
-              class: beta2
     backup-app:
       resources:
         cpu:
