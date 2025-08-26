@@ -1,0 +1,85 @@
+---
+version: "2.0"
+services:
+  postgres:
+    image: postgres:13
+    expose:
+      - port: 5432
+        as: 5432
+        to:
+          - global: true
+          - service: backup-app
+    env:
+      - POSTGRES_USER=akashuser
+      - POSTGRES_PASSWORD=akashpass
+      - POSTGRES_DB=akashdb
+    params:
+      storage:
+        data:
+          mount: /var/lib/postgresql/data
+          readOnly: false
+  backup-app:
+    image: your-dockerhub-username/akash-dropbox-backup:0.1
+    expose:
+      - port: 80
+        as: 80
+        to:
+          - global: true
+    env:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USER=akashuser
+      - POSTGRES_PASSWORD=akashpass
+      - POSTGRES_DB=akashdb
+      - DROPBOX_ACCESS_TOKEN=your_dropbox_token_here
+      - BACKUP_INTERVAL_SECONDS=86400 # Default: 24 hours (in seconds)
+    params:
+      storage:
+        shm:
+          mount: /dev/shm
+          readOnly: false
+profiles:
+  compute:
+    postgres:
+      resources:
+        cpu:
+          units: 1
+        memory:
+          size: 1Gi
+        storage:
+          - size: 512Mi
+          - name: data
+            size: 10Gi
+            attributes:
+              persistent: true
+              class: beta2
+    backup-app:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+          - name: shm
+            size: 1Gi
+            attributes:
+              persistent: false
+              class: ram
+  placement:
+    dcloud:
+      pricing:
+        postgres:
+          denom: uakt
+          amount: 10000
+        backup-app:
+          denom: uakt
+          amount: 100000
+deployment:
+  postgres:
+    dcloud:
+      profile: postgres
+      count: 1
+  backup-app:
+    dcloud:
+      profile: backup-app
+      count: 1
